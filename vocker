@@ -345,6 +345,8 @@ if __name__ == "__main__":
 
 
         with tempfile.NamedTemporaryFile("wb") as spec:
+            if type(xml) == str:
+                xml = xml.encode()
             spec.write(xml)
             spec.flush()
             sh.virsh("define", spec.name)
