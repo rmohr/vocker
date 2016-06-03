@@ -7,4 +7,4 @@ RUN echo Hello > /marker
 
 EXPOSE 1234
 
-CMD echo World >> /marker
+CMD echo World >> /marker && echo "Ciao!"

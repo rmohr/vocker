@@ -145,13 +145,16 @@ class CmdOperation(Operation):
             log.warn("Not supporting CMD […], copying it anyway")
 
         env = ["export %s" % e for e in self.env if "=" in e]
-        cmd = "#!/bin/bash\n\n%s\n\n%s" % ("\n".join(env), self.args)
+        cmd = "#!/bin/bash\n\n%s\n\n%s\n" % ("\n".join(env), self.args)
+        ttyS0 = "#!/bin/bash\n\nif [ `tty | sed -e \"s#^.\+/##\"` == ttyS0 ]; then /etc/vocker.sh; shutdown -h now; fi\n"
         log.debug("rc.local: %s" % cmd)
 
         fish(layer.filename,
-             "write", "/etc/rc.d/rc.local", cmd,
+             "write", "/etc/vocker.sh", cmd,
              ":",
-             "sh", "chmod a+x /etc/rc.d/rc.local",
+             "write", "/root/.bashrc", ttyS0,
+             ":",
+             "sh", "chmod a+x /etc/vocker.sh",
              ":",
              "sh", "sed -i '/^ExecStart=/ s/$/ --autologin root/' /usr/lib/systemd/system/getty@.service /usr/lib/systemd/system/serial-getty@.service",
              ":",
